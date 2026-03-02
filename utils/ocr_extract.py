@@ -3,9 +3,16 @@ import numpy as np
 import pytesseract
 import re
 from PIL import Image
+import platform
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-
+# --------------------------------------------------
+# 🌐 SMART TESSERACT CONFIGURATION
+# --------------------------------------------------
+# Automatically detect if we are on your local Windows PC or the Linux Cloud
+if platform.system() == "Windows":
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+else:
+    pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
 # --------------------------------------------------
 # Detect headline region (top dominant text)
