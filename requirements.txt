@@ -12,3 +12,4 @@ scikit-learn
 opencv-python-headless
 newspaper3k
 nltk
+lxml_html_clean
