@@ -1,3 +1,5 @@
+tesseract-ocr
+tesseract-ocr-mal
 streamlit
 pandas
 plotly
@@ -14,3 +16,4 @@ newspaper3k
 nltk
 lxml_html_clean
 pytesseract
+
