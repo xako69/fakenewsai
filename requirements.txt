@@ -10,3 +10,5 @@ deep-translator
 easyocr
 scikit-learn
 opencv-python-headless
+newspaper3k
+nltk
