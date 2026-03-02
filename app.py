@@ -259,7 +259,7 @@ def show_results(matches, query, semantic_decision):
 
     df = pd.DataFrame(matches).sort_values(by="score", ascending=False)
     ml_label, ml_conf = predict_ml(query)
-    final_conf = round((ml_conf + df["score"].mean()) / 2, 2)
+    final_conf = round((ml_conf * 0.3) + (df["score"].iloc[0] * 0.7), 2)
 
     # Animated KPI Row
     st.markdown("<br>", unsafe_allow_html=True)
@@ -397,4 +397,5 @@ with tabs[3]:
 
         st.download_button("📥 DOWNLOAD ENCRYPTED LOG DATA (CSV)", df.to_csv(index=False), file_name="sentinel_logs.csv", width='stretch')
     else:
+
         st.warning("No telemetric data logged yet. Initiate scans to populate the command center.")
