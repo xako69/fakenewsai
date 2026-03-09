@@ -238,15 +238,40 @@ def gauge(score):
     st.plotly_chart(fig, width='stretch')
 
 # -------------------------------------------------
-# EXPLAIN AI (PLOTLY)
+# 📊 NEW: EVIDENCE STRENGTH CHART
 # -------------------------------------------------
-def explain_ai(text):
-    words = text.split()
-    freq = pd.Series(words).value_counts().head(6).reset_index()
-    freq.columns = ['Word', 'Frequency']
-    # 🔥 FIXED: Changed 'cyan' to 'teal' which is a valid Plotly color scale
-    fig = px.bar(freq, x='Frequency', y='Word', orientation='h', title="Semantic Entity Extraction", color='Frequency', color_continuous_scale='teal')
-    fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#e2e8f0"), margin=dict(l=20, r=20, t=50, b=20))
+def plot_source_match(df):
+    if df.empty:
+        return
+        
+    # Take the top 6 sources for visual clarity
+    plot_df = df.head(6).copy()
+    plot_df['Publisher'] = plot_df['publisher'].str.upper()
+    
+    # Create an impressive bar chart showing semantic scores
+    fig = px.bar(
+        plot_df, 
+        x='score', 
+        y='Publisher', 
+        orientation='h', 
+        title="AI Evidence Score by Publisher", 
+        color='score', 
+        color_continuous_scale='teal',
+        text='score'
+    )
+    
+    # Format the layout to match the dark cyberpunk theme
+    fig.update_traces(texttemplate='%{text}%', textposition='outside')
+    fig.update_layout(
+        xaxis_title="Semantic Similarity (%)",
+        yaxis_title="",
+        yaxis={'categoryorder':'total ascending'},
+        paper_bgcolor="rgba(0,0,0,0)", 
+        plot_bgcolor="rgba(0,0,0,0)", 
+        font=dict(color="#e2e8f0"), 
+        margin=dict(l=20, r=20, t=50, b=20),
+        xaxis=dict(range=[0, 110]) # Gives room for the text label
+    )
     st.plotly_chart(fig, width='stretch')
 
 # -------------------------------------------------
@@ -259,6 +284,7 @@ def show_results(matches, query, semantic_decision):
 
     df = pd.DataFrame(matches).sort_values(by="score", ascending=False)
     ml_label, ml_conf = predict_ml(query)
+    # 70% weight to the hard evidence (Peak Match), 30% to grammatical ML
     final_conf = round((ml_conf * 0.3) + (df["score"].iloc[0] * 0.7), 2)
 
     # Animated KPI Row
@@ -288,7 +314,8 @@ def show_results(matches, query, semantic_decision):
     with col1:
         gauge(final_conf)
     with col2:
-        explain_ai(query)
+        # 🔥 CALLED THE NEW CHART HERE INSTEAD OF KEYWORDS
+        plot_source_match(df)
 
     # Animated Cards
     with st.expander("📡 VIEW LIVE NETWORK MATCHES", expanded=True):
@@ -397,5 +424,4 @@ with tabs[3]:
 
         st.download_button("📥 DOWNLOAD ENCRYPTED LOG DATA (CSV)", df.to_csv(index=False), file_name="sentinel_logs.csv", width='stretch')
     else:
-
         st.warning("No telemetric data logged yet. Initiate scans to populate the command center.")
