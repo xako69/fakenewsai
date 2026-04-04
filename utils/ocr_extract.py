@@ -105,8 +105,8 @@ def extract_text_from_image(image: Image.Image):
 
     gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
-    # VERY IMPORTANT: NO inversion here
-    config = "--oem 3 --psm 6 -l mal"
+    # 🔥 THE FIX: Switched to PSM 3 so it can handle posters and complex backgrounds
+    config = "--oem 3 --psm 3 -l mal"
 
     raw = pytesseract.image_to_string(gray, config=config)
 
@@ -114,3 +114,4 @@ def extract_text_from_image(image: Image.Image):
 
     confidence = 0.9 if len(clean) > 15 else 0.6
     return clean, confidence
+        
